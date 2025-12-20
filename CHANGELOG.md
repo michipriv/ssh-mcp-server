@@ -11,6 +11,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Command execution timeout support
   - Global `commandTimeout` configuration option (milliseconds)
   - Per-request `commandTimeout` parameter for `ssh_execute_command` and `ssh_execute_template` (overrides global)
+- Server Discovery Tool:
+  - `ssh_list_servers` tool to list all available SSH servers configured in the config file
 
 ### Removed
 - Remove unused global `timeout` configuration option

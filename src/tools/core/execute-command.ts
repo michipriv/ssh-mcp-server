@@ -1,5 +1,5 @@
-import type { ToolRegistration, HandlerContext } from './types.js';
-import { buildToolResult } from './response-builder.js';
+import type { ToolRegistration, HandlerContext } from '../types.js';
+import { buildToolResult } from '../response-builder.js';
 
 interface ExecuteCommandArgs {
   connectionName: string;

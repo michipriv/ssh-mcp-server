@@ -2,7 +2,8 @@ import type { Tool } from '@modelcontextprotocol/sdk/types.js';
 import type { ToolRegistration } from './types.js';
 
 // Core
-import { executeCommand } from './execute-command.js';
+import { executeCommand } from './core/execute-command.js';
+import { listServers } from './core/list-servers.js';
 
 // Port Forward
 import { portForward } from './port-forward/port-forward.js';
@@ -22,6 +23,7 @@ import { listTemplates } from './templates/list-templates.js';
 
 const registrations: ToolRegistration[] = [
   executeCommand,
+  listServers,
   portForward,
   forwardService,
   closePortForward,
