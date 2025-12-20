@@ -235,4 +235,17 @@ export class ConfigManager {
       }
     });
   }
+
+  listServers(): Array<{ name: string; host: string; port: number; username: string }> {
+    if (!this.config.servers) {
+      return [];
+    }
+
+    return Object.entries(this.config.servers).map(([name, server]) => ({
+      name,
+      host: server.host,
+      port: server.port || 22,
+      username: server.username,
+    }));
+  }
 }

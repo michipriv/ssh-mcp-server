@@ -1,11 +1,11 @@
 import type { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
-import { executeCommand } from '../tools/execute-command.js';
-import { ConfigManager } from '../config.js';
-import { SSHConnectionManager } from '../ssh-manager.js';
-import type { HandlerContext } from '../tools/types.js';
+import { executeCommand } from '../../tools/core/execute-command.js';
+import { ConfigManager } from '../../config.js';
+import { SSHConnectionManager } from '../../ssh-manager.js';
+import type { HandlerContext } from '../../tools/types.js';
 
-jest.mock('../config.js');
-jest.mock('../ssh-manager.js');
+jest.mock('../../config.js');
+jest.mock('../../ssh-manager.js');
 
 describe('handleExecuteCommand', () => {
     let mockConfigManager: jest.Mocked<ConfigManager>;

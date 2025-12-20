@@ -315,6 +315,41 @@ Execute commands on remote servers.
 }
 ```
 
+### `ssh_list_servers`
+
+List all available SSH servers configured in your config file.
+
+**Parameters:** None
+
+**Example:**
+```json
+{}
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "servers": [
+    {
+      "name": "production-api",
+      "host": "api-prod-01.example.com",
+      "port": 22,
+      "username": "deploy"
+    },
+    {
+      "name": "staging-db",
+      "host": "db-staging.example.com",
+      "port": 2222,
+      "username": "admin"
+    }
+  ],
+  "count": 2
+}
+```
+
+This tool helps AI assistants discover what servers are available for SSH operations without needing to see the full configuration file.
+
 ### `ssh_port_forward`
 
 Set up SSH port forwarding to access remote services.

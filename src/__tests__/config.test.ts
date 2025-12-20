@@ -1136,4 +1136,145 @@ describe('ConfigManager', () => {
       await expect(configManager.load()).resolves.not.toThrow();
     });
   });
+
+  describe('listServers', () => {
+    it('should return empty array when no servers configured', async () => {
+      const mockConfig = {
+        allowedCommands: ['ls', 'pwd'],
+      };
+
+      (existsSync as jest.Mock).mockReturnValue(true);
+      (readFile as jest.Mock).mockResolvedValue(JSON.stringify(mockConfig));
+
+      await configManager.load();
+
+      const servers = configManager.listServers();
+      expect(servers).toEqual([]);
+    });
+
+    it('should return list of servers with connection details', async () => {
+      const mockConfig = {
+        servers: {
+          'production-api': {
+            host: 'api-prod-01.example.com',
+            port: 22,
+            username: 'deploy',
+            privateKeyPath: '~/.ssh/id_rsa',
+          },
+          'staging-db': {
+            host: 'db-staging.example.com',
+            port: 2222,
+            username: 'admin',
+            privateKeyPath: '~/.ssh/staging_key',
+          },
+        },
+      };
+
+      (existsSync as jest.Mock).mockReturnValue(true);
+      (readFile as jest.Mock).mockResolvedValue(JSON.stringify(mockConfig));
+
+      await configManager.load();
+
+      const servers = configManager.listServers();
+      expect(servers).toHaveLength(2);
+      expect(servers).toEqual([
+        {
+          name: 'production-api',
+          host: 'api-prod-01.example.com',
+          port: 22,
+          username: 'deploy',
+        },
+        {
+          name: 'staging-db',
+          host: 'db-staging.example.com',
+          port: 2222,
+          username: 'admin',
+        },
+      ]);
+    });
+
+    it('should use default port 22 when not specified', async () => {
+      const mockConfig = {
+        servers: {
+          'default-port-server': {
+            host: 'server.example.com',
+            username: 'user',
+            privateKeyPath: '~/.ssh/id_rsa',
+          },
+        },
+      };
+
+      (existsSync as jest.Mock).mockReturnValue(true);
+      (readFile as jest.Mock).mockResolvedValue(JSON.stringify(mockConfig));
+
+      await configManager.load();
+
+      const servers = configManager.listServers();
+      expect(servers).toHaveLength(1);
+      expect(servers[0].port).toBe(22);
+    });
+
+    it('should not include privateKeyPath in the list', async () => {
+      const mockConfig = {
+        servers: {
+          'secure-server': {
+            host: 'server.example.com',
+            port: 22,
+            username: 'admin',
+            privateKeyPath: '~/.ssh/secret_key',
+          },
+        },
+      };
+
+      (existsSync as jest.Mock).mockReturnValue(true);
+      (readFile as jest.Mock).mockResolvedValue(JSON.stringify(mockConfig));
+
+      await configManager.load();
+
+      const servers = configManager.listServers();
+      expect(servers[0]).not.toHaveProperty('privateKeyPath');
+      expect(servers[0]).toEqual({
+        name: 'secure-server',
+        host: 'server.example.com',
+        port: 22,
+        username: 'admin',
+      });
+    });
+
+    it('should handle multiple servers with different configurations', async () => {
+      const mockConfig = {
+        servers: {
+          'server1': {
+            host: 'server1.example.com',
+            port: 22,
+            username: 'user1',
+            privateKeyPath: '~/.ssh/key1',
+          },
+          'server2': {
+            host: 'server2.example.com',
+            port: 2222,
+            username: 'user2',
+            privateKeyPath: '~/.ssh/key2',
+          },
+          'server3': {
+            host: '10.0.0.5',
+            username: 'root',
+            privateKeyPath: '~/.ssh/key3',
+          },
+        },
+      };
+
+      (existsSync as jest.Mock).mockReturnValue(true);
+      (readFile as jest.Mock).mockResolvedValue(JSON.stringify(mockConfig));
+
+      await configManager.load();
+
+      const servers = configManager.listServers();
+      expect(servers).toHaveLength(3);
+      expect(servers[0].name).toBe('server1');
+      expect(servers[1].name).toBe('server2');
+      expect(servers[2].name).toBe('server3');
+      expect(servers[2].port).toBe(22); // default port
+    });
+  });
 });
